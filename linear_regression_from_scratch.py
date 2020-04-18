@@ -6,7 +6,7 @@ import random
 
 # load the data
 exp_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv'
-df = np.array(pd.read_csv(exp_url, sep = ';'))
+df = np.array(pd.read_csv(exp_url, sep = ';', header = None))
 
 # add bias to the dataframe
 m_total = df.shape[0]
@@ -27,7 +27,7 @@ x_test = df[m:, :-1]
 y_test = df[m:, -1].reshape((m_total - m, 1))
 
 # set up parameters
-alpha = 0.0005
+alpha = 0.0005	# learning rate
 iterations = 10000
 theta = np.ones((n, 1))
 
@@ -40,7 +40,7 @@ for iteration in range(iterations):
 	h = np.dot(x_train, theta)
 	# cost
 	J = (((h - y_train) ** 2).sum(axis = 0)) / (2 * m)
-	# update theta
+	# update theta using batch gradient descent
 	theta -= (alpha / m) * np.dot(x_train.T, (h - y_train))
 
 	print('cost = ' + str(J))
