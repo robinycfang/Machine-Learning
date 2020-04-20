@@ -49,13 +49,15 @@ alpha = 0.0005	# learning rate
 iterations = 100
 theta = np.ones((n, 1))
 
-
+# predict
+def predict(x, theta):
+	z = np.dot(x, theta)
+	return 1 / (1 + np.exp(-z))
 
 # train the logistic regression with stochastic gradient descent
 for iteration in range(iterations):
 	for i in range(m):
-		z = np.dot(x_train[i], theta)
-		h = 1 / (1 + np.exp(-z))
+		h = predict(x_train[i], theta)
 		# J = -1/m * sum over m [(y * log(h) + (1 - y) * log(1 - h))], where m is 1 here
 		J = - (y_train[i] * np.log(h) + (1 - y_train[i]) * np.log(1 - h))
 
@@ -65,3 +67,32 @@ for iteration in range(iterations):
 
 		# theta -= alpha * sum over m [(h - y) * x], where m is 1 here
 		theta -= alpha * (h - y_train[i]) * x_train[i].reshape((n, -1))
+
+# model evaluation on the test data
+
+pred = predict(x_test, theta)
+pred = np.where(pred > 0.5, 1, 0)	# np.where(con, do, else_do)
+
+# building confusion matrix
+
+TP = 0
+FP = 0
+TN = 0
+FN = 0
+
+for i in range(len(y_test)):
+	if y_test[i] == 0:	# neg obs
+		if pred[i] == 0:	# neg pred
+			TN += 1
+		else:	# pos pred
+			FP += 1
+	
+	else:	# pos obs
+		if pred[i] == 0:
+			FN += 1
+		else:
+			TP += 1
+
+precision = TP / (TP + FP)
+recall = TP / (TP + FN)
+F1 = 2 * (precision * recall) / (precision + recall)
